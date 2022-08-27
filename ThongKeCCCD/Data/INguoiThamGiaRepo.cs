@@ -44,25 +44,28 @@ namespace ThongKeCCCD.Data
         {
             return await db.CoQuanBhxh.ToListAsync();
         }
-
+        /// <summary>
+        /// Thống kế kh2207 toàn tỉnh
+        /// </summary>
+        /// <returns></returns>
         public async Task<IEnumerable<ThongKe2207Dto>?> GetThongKe2207DtosAsync()
         {
             var list = new List<ThongKe2207Dto>();
 
-            foreach (var item in db.CoQuanBhxh.ToList())
+            foreach (var item in await db.CoQuanBhxh.ToListAsync())
             {
-                var dsThamGia = new List<NguoiThamGia>();
+                IQueryable<NguoiThamGia> dsThamGia;
 
                 if (item.MaHuyen == "01")
-                    dsThamGia = await db.NguoiThamGia.Where(x => string.IsNullOrEmpty(x.MaHuyen) || x.MaHuyen == "01").ToListAsync();
+                    dsThamGia =  db.NguoiThamGia.Where(x => string.IsNullOrEmpty(x.MaHuyen) || x.MaHuyen == "01");
                 else
-                    dsThamGia = await db.NguoiThamGia.Where(x => x.MaHuyen == item.MaHuyen).ToListAsync();
+                    dsThamGia =  db.NguoiThamGia.Where(x => x.MaHuyen == item.MaHuyen);
                 if (dsThamGia != null)
                 {
                     var thongKe = new ThongKe2207Dto
                     {
                         DonVi = item.Ten,
-                        TongNtg = dsThamGia.Count,
+                        TongNtg = dsThamGia.Count(),
                         TongCccd = dsThamGia.Count(x => !string.IsNullOrEmpty(x.SoDdcnCccdBca)),
                         TongDangKyVssid = dsThamGia.Count(x => x.DaDangKyVssid == "X"),
                         TongDangNhapVssid = dsThamGia.Count(x => x.DangNhapVssid == "X"),
