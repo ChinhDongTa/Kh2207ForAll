@@ -1,0 +1,70 @@
+﻿@page "/"
+@inject INguoiThamGiaRepo repo
+<PageTitle>Index</PageTitle>
+
+<MudText Typo="Typo.h3" Color="Color.Success" GutterBottom="true">Danh sách người tham gia</MudText>
+
+<MudPaper Class="d-flex flex-row flex-grow-1 gap-5" Elevation="0">
+    <MudPaper Width="400px" Elevation="0">
+        @if (depts != null)
+        {
+            <MudSelect @bind-Value="maHuyen" Label="Đơn vị" Required="true" RequiredError="Chưa chọn đơn vị" Placeholder="Chọn đơn vị">
+                   
+                @foreach (var dept in depts)
+                {
+                    <MudSelectItem Value="@dept.MaHuyen">@dept.Ten</MudSelectItem>
+                }
+            </MudSelect>
+        }
+    </MudPaper>
+    <MudPaper Elevation="0">
+        <MudButton Color="Color.Primary" Size="Size.Large" Variant="Variant.Filled" OnClick="FindNtgOnclick">Tìm</MudButton>
+    </MudPaper>
+</MudPaper>
+
+
+@if (list == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else if (list.Any())
+{
+    <MudDataGrid Bordered="true" T="NguoiThamGia" Items="@list" SortMode="SortMode.Multiple" Filterable="true">
+        <Columns>
+            <Column T="NguoiThamGia" Field="SoBhxh" Title="Mã số BHXH" />
+            <Column T="NguoiThamGia" Field="HoTen" Title="Họ tên" />
+            <Column T="NguoiThamGia" Field="MaDvi" Title="Mã đơn vị" />
+            <Column T="NguoiThamGia" Field="MaHuyen" Title="Mã huyện" />
+            <Column T="NguoiThamGia" Field="SoKcb" Title="Thẻ Bhyt" />
+            <Column T="NguoiThamGia" Field="SoCmnd" Title="CMND" />
+            <Column T="NguoiThamGia" Field="DangNhapVssid" Title="Đăng nhập Vssid" />
+            <Column T="NguoiThamGia" Field="DaDangKyVssid" Title="Đã đăng ký Vssid" Filterable="true" />
+            <Column T="NguoiThamGia" Field="TrangThaiXacThuc" Title="Trạng thái xác thực" Filterable="true" />
+            <Column T="NguoiThamGia" Field="SoDdcnCccdBca" Title="CCCD/ĐDCN" Filterable="true" />
+            <Column T="NguoiThamGia" Field="ThongTinKhongChinhXac" Title="Thông tin không chính xác" />
+        </Columns>
+        <PagerContent>
+            <MudDataGridPager T="NguoiThamGia" />
+        </PagerContent>
+    </MudDataGrid>
+}
+@code {
+    IEnumerable<NguoiThamGia>? list = Enumerable.Empty<NguoiThamGia>();
+    IEnumerable<CoQuanBhxh> depts = Enumerable.Empty<CoQuanBhxh>();
+    string? maHuyen;
+    protected override async Task OnInitializedAsync()
+    {
+        //list = await repo.GetAll();
+        depts = await repo.GetCoQuanBhxhs();
+    }
+    async void FindNtgOnclick()
+    {
+        list = null;
+        //StateHasChanged();
+        if(!string.IsNullOrEmpty(maHuyen))
+        {
+            list = await repo.Find(x=>x.MaHuyen==maHuyen);
+            StateHasChanged();
+        }
+    }
+}

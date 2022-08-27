@@ -1,0 +1,39 @@
+﻿@page "/TongHopBca"
+@inject INguoiThamGiaRepo repo
+<PageTitle>Thông kê tỷ lệ xác thực BCA của tỉnh</PageTitle>
+
+<MudText Typo="Typo.h5" GutterBottom="true">Thống kê tỷ lệ xác thực BCA, Vssid theo kế hoạch(2207/KH-BHXH)</MudText>
+@if (list == null)
+{
+    <MudProgressCircular Color="Color.Default" Indeterminate="true" />
+}
+else if (list.Any())
+{
+    <MudDataGrid Bordered="true" T="ThongKe2207Dto" Items="@list" SortMode="SortMode.Multiple">
+        <Columns>
+            
+            <Column T="ThongKe2207Dto" Field="DonVi" Title="Đơn vị" />
+            <Column T="ThongKe2207Dto" Field="TongNtg" Title="Tổng NTG" />
+            <Column T="ThongKe2207Dto" Field="TongDangNhapVssid" Title="Tổng Đăng nhập Vssid" />
+            <Column T="ThongKe2207Dto" Field="TongDangKyVssid" Title="Tổng Đã đăng ký Vssid" Filterable="true" />
+            <Column T="ThongKe2207Dto" Field="TongXacThuc" Title="Tổng trạng thái xác thực" Filterable="true" />
+            <Column T="ThongKe2207Dto" Field="TongCccd" Title="Tổng CCCD/ĐDCN" Filterable="true" />
+            <Column T="ThongKe2207Dto" Field="TyLeDangNhapVssid" Title="Tỷ lệ đăng nhập Vssid" />
+            <Column T="ThongKe2207Dto" Field="TyLeDangKyVssid" Title="Tỷ lệ đăng ký Vssid" />
+            <Column T="ThongKe2207Dto" Field="TyleXacThuc" Title="Tỷ lệ xác thực BCA" />
+            <Column T="ThongKe2207Dto" Field="TyLeCccd" Title="Tỷ lệ có Cccd/ĐDCN" />
+        </Columns>
+      @*  <PagerContent>
+            <MudDataGridPager T="NguoiThamGia" />
+        </PagerContent>*@
+    </MudDataGrid>
+}
+@code {
+    IEnumerable<ThongKe2207Dto>? list ;
+
+    protected override async Task OnInitializedAsync()
+    {
+        list = await repo.GetThongKe2207DtosAsync();
+    }
+
+}
